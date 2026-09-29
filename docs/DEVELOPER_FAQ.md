@@ -94,6 +94,34 @@ Only move to a custom file-backed icon if there is a strong reason and it is vis
 
 Practical rule: if a custom panel icon is invisible, switch to a text/glyph-based mark before debugging more complex asset-loading paths.
 
+## macOS builds and startup
+
+### Why does a rebuild leave the installed app or Login Item on an older version?
+
+Raw `go build` only writes a binary. Use `build/build.sh` or `task build` for a
+local delivery: it rebuilds `dist/git-repo-tracker.app`, signs and verifies it,
+and replaces `/Applications/git-repo-tracker.app`. `task bundle` and
+`task app-build-local` use the same path. `task run` also builds first and opens
+the installed bundle. Packaging a release without `--install` does not install
+anything on the build machine.
+
+The installed path remains stable for the login item. Do not enable startup
+from a temporary `go run` or preview executable: that file can disappear.
+Use the installed app's Settings to enable **Start git-repo-tracker at login**.
+
+An already running app still uses the old process until you quit and reopen it.
+Builds deliberately do not stop or start the app.
+
+To use another installation directory, set `GIT_REPO_TRACKER_INSTALL_DIR` and
+enable startup again from that copy. Installation stages and verifies the new
+bundle before moving the previous copy, and restores the previous copy if the
+final move fails. Locks prevent overlapping local builds, packaging, and
+installations. A forcibly killed process can leave `dist/.local-build-lock`,
+`dist/.git-repo-tracker.package-lock`, or `.git-repo-tracker.install-lock` in the
+installation directory. Confirm no build/installer is running before removing
+a leftover empty lock folder and retrying. If restoration fails, the error
+prints the retained backup path.
+
 ## macOS privacy
 
 ### Why does macOS keep asking for Documents access?

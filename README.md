@@ -61,9 +61,28 @@ Requires **Go 1.26+** and `git` on your `PATH`. On Debian/Ubuntu install the Fyn
 build dependencies first with `task linux-deps`.
 
 ```sh
-task run     # or: go run ./cmd/git-repo-tracker
-task build   # produces ./git-repo-tracker
+build/build.sh  # build; on macOS also rebuild and install the .app
+task build     # same command, if Task is installed
+task run       # build, then open the installed app on macOS
 ```
+
+On macOS, each local build creates `dist/git-repo-tracker.app`, signs it for
+local use, and replaces `/Applications/git-repo-tracker.app`. `task bundle` and
+`task app-build-local` use the same build-and-install workflow. The installation
+path stays stable for Login Items. A failed build, signature check, or copy keeps
+the previous installed app; a failed replacement restores it.
+
+Builds do not quit or relaunch a running app. Quit and reopen it to use the new
+version. To install elsewhere, set `GIT_REPO_TRACKER_INSTALL_DIR`, for example:
+
+```sh
+GIT_REPO_TRACKER_INSTALL_DIR="$HOME/Applications" build/build.sh
+```
+
+If you change that directory, enable **Launch at login** from the new installed
+copy to update its startup path. Raw `go build` and `go test` remain compilation
+and test commands; they do not install the app. On Linux, `build/build.sh` only
+builds the binary.
 
 Headless/status CLI:
 

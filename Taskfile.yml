@@ -21,9 +21,9 @@ tasks:
     silent: true
 
   build:
-    desc: Compile the binary
+    desc: Compile the binary; on macOS also rebuild and replace the installed app
     cmds:
-      - go build -o {{.BIN}} ./cmd/{{.BIN}}
+      - build/build.sh
 
   cli-build:
     desc: Build the headless CLI bridge into ~/.local/bin
@@ -32,15 +32,20 @@ tasks:
       - go build -o "$HOME/.local/bin/{{.CLI_BIN}}" ./cmd/{{.CLI_BIN}}
 
   app-build-local:
-    desc: Build the GUI app into ~/.local/bin for desktop integrations
+    desc: Build into ~/.local/bin; on macOS also replace the installed app
     cmds:
-      - mkdir -p "$HOME/.local/bin"
-      - go build -o "$HOME/.local/bin/{{.BIN}}" ./cmd/{{.BIN}}
+      - build/build.sh "$HOME/.local/bin/{{.BIN}}"
 
   run:
-    desc: Build and run directly (useful while developing)
+    desc: Build and run (opens the installed app on macOS)
     cmds:
-      - go run ./cmd/{{.BIN}}
+      - task: build
+      - |
+        if [ "$(uname -s)" = Darwin ]; then
+          open "${GIT_REPO_TRACKER_INSTALL_DIR:-/Applications}/{{.BIN}}.app"
+        else
+          ./{{.BIN}}
+        fi
 
   test:
     desc: Run unit tests
@@ -82,13 +87,10 @@ tasks:
       - go install fyne.io/tools/cmd/fyne@latest
 
   bundle:
-    desc: 'Build git-repo-tracker.app into ./dist (same bundle the release ships: menu-bar agent)'
+    desc: Build the macOS app into ./dist and replace the installed copy
+    platforms: [darwin]
     cmds:
-      # MACOSX_DEPLOYMENT_TARGET pins the minimum macOS so the bundle runs on older
-      # systems (e.g. Sequoia), not just the SDK version of the build machine.
-      - MACOSX_DEPLOYMENT_TARGET=11.0 go build -trimpath -ldflags "-s -w -X main.version=dev" -o dist/{{.BIN}} ./cmd/{{.BIN}}
-      - build/macos/package-app.sh --binary dist/{{.BIN}} --version dev --out dist
-      - 'echo "Built dist/{{.BIN}}.app — try: open dist/{{.BIN}}.app"'
+      - build/build.sh dist/{{.BIN}}
 
   linux-deps:
     desc: 'Install the Fyne build dependencies on Debian/Ubuntu'

@@ -15,16 +15,21 @@ the notes below cover the dev setup and conventions.
 ## Common commands
 
 ```sh
-task run     # go run ./cmd/git-repo-tracker
-task build   # build ./git-repo-tracker
+task run     # build, then run (opens the installed .app on macOS)
+task build   # build ./git-repo-tracker; on macOS also install the .app
 task test    # go test ./...
 task check   # gofmt + go vet + go test    ← run before pushing
 task fmt     # gofmt -w .
 task vet     # go vet ./...
 task icon    # regenerate icon.png from internal/assets/icon.svg
-task bundle  # build dist/git-repo-tracker.app (the release bundle) locally
+task bundle  # macOS: build dist/git-repo-tracker.app and replace the installed app
 task docs    # serve the docs (MkDocs Material) at http://localhost:8000
 ```
+
+Without Task, use `build/build.sh`. On macOS, local builds sign and install the
+bundle into `/Applications` (override with `GIT_REPO_TRACKER_INSTALL_DIR`). They
+preserve the previous app if compilation or installation fails and do not
+restart it. Quit and reopen a running copy to load the new build.
 
 Run the race detector when touching the monitor or any concurrency:
 

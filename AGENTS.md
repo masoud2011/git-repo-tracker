@@ -114,6 +114,11 @@ hover/scroll feel) must be verified by the human — call that out explicitly.
 
 ## Before you finish
 
+- For a local app rebuild/delivery, use `build/build.sh` (or `task build`). On
+  macOS it also packages, signs, and replaces `/Applications/git-repo-tracker.app`.
+  `task bundle` and `task app-build-local` use the same workflow. Raw `go build`
+  is only a compilation check and does not update the installed app. Builds do
+  not relaunch the GUI; request permission for any GUI interaction separately.
 - Run the gate (fmt/build/vet/test; `-race` for concurrency).
 - Refactors must be **behavior-preserving** unless a change was requested.
 - Keep docs in sync: `README.md`, `docs/CONFIGURATION.md` (config fields/env vars),

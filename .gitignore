@@ -11,3 +11,6 @@ dist/
 
 # MkDocs build output
 /site/
+
+# Local work plans
+.plan/

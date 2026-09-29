@@ -94,6 +94,7 @@ is left unchanged and reports the pull error in its row.
 |----------|--------|
 | `GIT_REPO_TRACKER_CONFIG` | Path to the config file (overrides the default location) |
 | `GIT_REPO_TRACKER_CACHE` | Path to the state cache file (overrides the default location) |
+| `GIT_REPO_TRACKER_INSTALL_DIR` | Local macOS build scripts only: directory receiving `git-repo-tracker.app` (default `/Applications`); not a runtime setting |
 | `GRT_VIBRANCY=1` | macOS only: enable the experimental `NSVisualEffectView` blur behind the popover (off by default; may not render through Fyne's canvas) |
 
 ## State cache
